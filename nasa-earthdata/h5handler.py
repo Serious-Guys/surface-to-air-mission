@@ -34,3 +34,8 @@ class h5Handler:
         for key in self.get_geolocation_keys():
             result[key] = self.get_geolocation_by_key(key)
         return result
+
+
+if __name__ == '__main__':
+    # TODO: remove before deploying
+    hander = h5Handler('cache/nasa-earthdata/CarbonMonoxide/MOP02R-20191004.25-L2V18.2.1.he5')
