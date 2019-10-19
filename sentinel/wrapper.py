@@ -6,9 +6,9 @@ import datetime as date
 from utils import format_datetime, make_dirs
 
 AVAILABLE_PRODUCTS = {
-    'Ozone'         : 'L2__O3____',
+    #'Ozone'         : 'L2__O3____',
     'Aerosol'       : 'L2__Aerosol____',
-    'CarbonMonoxide': 'L2__CO____',
+    #'CarbonMonoxide': 'L2__CO____',
     'NitrogenDioxide': 'L2__NO2____',
     'SulfurDioxide': 'L2__SO2____',
     'Formaldehyde': 'L2__HCHO____',
@@ -78,16 +78,30 @@ class SentinelWrapper:
                         processing_level=self.processing_level
                     )
 
-                save_dir = base_save_dir + f"{product.strip('_')}_{self.begin_datetime[:10]}_{self.end_datetime[:10]}"
+                if len(result['products']) > 0:
 
-                if not os.path.exists(save_dir):
-                    os.makedirs(save_dir)
-                else:
-                    for file in glob.glob(save_dir + '/*'):
-                        os.remove(file)
+                    save_dir = base_save_dir + f"{product.strip('_')}_{self.begin_datetime[:10]}_{self.end_datetime[:10]}"
+                    if not os.path.exists(save_dir):
+                        os.makedirs(save_dir)
+                    else:
+                        for file in glob.glob(save_dir + '/*'):
+                            os.remove(file)
 
-                sentinel5dl.download(result.get('products'), output_dir=save_dir)
+                    sentinel5dl.download(result.get('products'), output_dir=save_dir)
 
-                rfiles.extend(glob.glob(save_dir + '/*'))
+                    rfiles.extend(glob.glob(save_dir + '/*'))
 
             return rfiles
+
+
+if __name__ == '__main__':
+    dots = [(7.8, 49.3), (13.4, 49.3), (13.4, 52.8), (7.8, 52.8), (7.8, 49.3)]
+    s = SentinelWrapper()
+    s.set_polygon(dots)
+    b_date = date.datetime.fromisoformat('2019-09-15 00:00:00')
+    e_date = date.datetime.fromisoformat('2019-10-19 00:00:00')
+    s.set_interval(b_date, e_date)
+    products = list(AVAILABLE_PRODUCTS.keys())
+    s.set_products(products)
+    s.set_processing_level(2)
+    s.save()
