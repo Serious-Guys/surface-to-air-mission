@@ -1,11 +1,14 @@
+import glob
+import os
+
 import sentinel5dl
 import datetime as date
 from utils import format_datetime, make_dirs
 
 AVAILABLE_PRODUCTS = {
-    'Ozone'         : 'L2__O3____',
+    #'Ozone'         : 'L2__O3____',
     'Aerosol'       : 'L2__Aerosol____',
-    'CarbonMonoxide': 'L2__CO____',
+   # 'CarbonMonoxide': 'L2__CO____',
     'Nitrogen': 'L2__NO2____',
     'SulfurDioxide': 'L2__SO2____',
     'Formaldehyde': 'L2__HCHO____',
@@ -65,7 +68,7 @@ class SentinelWrapper:
     def save(self):
         if self.assert_readiness():
             base_save_dir = 'cache/sentinel/'
-
+            rfiles = []
             for product in self.products:
                 result = sentinel5dl.search(
                         polygon=self.polygon,
@@ -75,17 +78,28 @@ class SentinelWrapper:
                         processing_level=self.processing_level
                     )
 
-                save_dir = base_save_dir + f"{product.strip('_')}"
-                make_dirs(save_dir)
+                save_dir = base_save_dir + f"{product.strip('_')}_{self.begin_datetime[:10]}_{self.end_datetime[:10]}"
+
+                if not os.path.exists(save_dir):
+                    os.makedirs(save_dir)
+                else:
+                    for file in glob.glob(save_dir + '/*'):
+                        os.remove(file)
+
                 sentinel5dl.download(result.get('products'), output_dir=save_dir)
+
+                rfiles.extend(glob.glob(save_dir + '/*'))
+
+            return rfiles
 
 
 if __name__ == '__main__':
-    dots = [(7.8, 49.3), (13.4, 49.3), (13.4, 52.8), (7.8, 52.8), (7.8, 49.3)]
+    dots = [(0.8, 39.3), (20.4, 39.3), (20.4, 49.8), (0.8, 49.8), (0.8, 39.3)]
     s = SentinelWrapper()
     s.set_polygon(dots)
-    b_date = date.datetime.fromisoformat('2019-09-15 00:00:00')
-    s.set_interval(b_date)
+    b_date = date.datetime.fromisoformat('2019-08-19 00:00:00')
+    e_date = date.datetime.fromisoformat('2019-10-19 00:00:00')
+    s.set_interval(b_date, e_date)
     products = list(AVAILABLE_PRODUCTS.keys())
     s.set_products(products)
     s.set_processing_level(2)

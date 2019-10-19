@@ -2,30 +2,30 @@
 # import netCDF4 as ncd
 #
 # # Search for Sentinel-5 products
-# result = search(
-#         polygon='POLYGON((7.8 49.3,13.4 49.3,13.4 52.8,7.8 52.8,7.8 49.3))',
-#         begin_ts='2019-09-01T00:00:00.000Z',
-#         end_ts='2019-09-17T23:59:59.999Z',
-#         product='L2__CO____',
-#         processing_level='L2')
+result = search(
+        polygon='POLYGON((7.8 49.3,13.4 49.3,13.4 52.8,7.8 52.8,7.8 49.3))',
+        begin_ts='2019-09-01T00:00:00.000Z',
+        end_ts='2019-09-17T23:59:59.999Z',
+        product='L2__CO____',
+        processing_level='L2')
 #
 # # Download found products to the local folder
 # download(result.get('products'))
 
 import netCDF4 as nc4
-filename = 'S5P_OFFL_L2__CO_____20190917T091457_20190917T105627_09988_01_010302_20190923T083947.nc'
+filename = '/home/fux/projects/surface-to-air-mission/cache/sentinel/L2__O3_2019-09-15_2019-09-16/S5P_OFFL_L2__O3_____20190915T095314_20190915T113443_09960_01_010107_20190921T122755.nc'
 fh = nc4.Dataset(filename, mode='r')
 keys = fh.groups['PRODUCT'].variables.keys()
 print(keys)
 lons = fh.groups['PRODUCT'].variables['longitude'][:][0,:,:]
 lats = fh.groups['PRODUCT'].variables['latitude'][:][0,:,:]
-no2 = fh.groups['PRODUCT'].variables['carbonmonoxide_total_column_precision'][0,:,:]
+no2 = fh.groups['PRODUCT'].variables['ozone_total_vertical_column_precision'][0,:,:]
 print (lons.shape)
 print (lats.shape)
 print (no2.shape)
 
 
-no2_units = fh.groups['PRODUCT'].variables['carbonmonoxide_total_column_precision'].units
+no2_units = fh.groups['PRODUCT'].variables['ozone_total_vertical_column_precision'].units
 
 
 import matplotlib.pyplot as plt
