@@ -1,9 +1,9 @@
 import os
-import re
-
 import requests
-from credentials import CredentialsWrapper as creds
 import bs4
+
+
+from credentials import CredentialsWrapper as creds
 
 
 class SessionWithHeaderRedirection(requests.Session):
@@ -56,7 +56,7 @@ def save_topics(topics: list = None):
     for topic, urls in get_urls.items():
         for url in urls:
             filename = url[url.rfind('/') + 1:]
-            directory = f'cache/{topic}/'
+            directory = f'cache/nasa-earthdata/{topic}/'
             save_path = directory + filename
 
             try:
