@@ -1,5 +1,6 @@
 import glob
 import os
+from datetime import datetime
 
 import sentinel5dl
 import datetime as date
@@ -91,3 +92,19 @@ class SentinelWrapper:
                 rfiles.extend(glob.glob(save_dir + '/*'))
 
             return rfiles
+
+
+if __name__ == '__main__':
+    # TODO: remove before deployment
+    dots = [(11.1, 48.1), (11.1, 48.2), (11.12, 48.2), (11.2, 48.1), (11.1, 48.1)]
+    products = ['CarbonMonoxide']
+
+    begin_time_str = '2019-10-01 00:00:00.000'
+    begin_df = datetime.strptime(begin_time_str, '%Y-%m-%d %H:%M:%S.%f')
+
+    end_time_str = '2019-10-18 00:00:00.000'
+    end_df = datetime.strptime(end_time_str, '%Y-%m-%d %H:%M:%S.%f')
+
+    sentinel_wrapper = SentinelWrapper(dots=dots, products=products, begin_datetime=begin_df, end_datetime=end_df,
+                                       level=2)
+    sentinel_wrapper.save()
