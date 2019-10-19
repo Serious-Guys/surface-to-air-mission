@@ -21,16 +21,14 @@ class NC4Handler:
                 key_val = new_key
                 break
 
-        lons = fh.groups['PRODUCT'].variables['longitude'][:][0, :, :]
-        lats = fh.groups['PRODUCT'].variables['latitude'][:][0, :, :]
+        self.lons = fh.groups['PRODUCT'].variables['longitude'][:][0, :, :]
+        self.lats = fh.groups['PRODUCT'].variables['latitude'][:][0, :, :]
 
-        vals = fh.groups['PRODUCT'].variables[key_val][:][0, :, :]
-        vals_pres = fh.groups['PRODUCT'].variables[key_pres][:][0, :, :]
+        self.vals = fh.groups['PRODUCT'].variables[key_val][:][0, :, :]
+        self.vals_pres = fh.groups['PRODUCT'].variables[key_pres][:][0, :, :]
 
-        vals_units = fh.groups['PRODUCT'].variables[key_val].units
-        vals_pres_units = fh.groups['PRODUCT'].variables[key_pres].units
-
-        pass
+        self.vals_units = fh.groups['PRODUCT'].variables[key_val].units
+        self.vals_pres_units = fh.groups['PRODUCT'].variables[key_pres].units
 
     @staticmethod
     def load_files(filenames):
@@ -39,8 +37,3 @@ class NC4Handler:
     @staticmethod
     def load_file(filename):
         return NC4Handler(filename)
-
-
-if __name__ == '__main__':
-    s = NC4Handler('/home/fux/projects/surface-to-air-mission/cache/sentinel/L2__O3_2019-09-15_2019-09-16/S5P_OFFL_L2__O3_____20190915T095314_20190915T113443_09960_01_010107_20190921T122755.nc')
-    pass

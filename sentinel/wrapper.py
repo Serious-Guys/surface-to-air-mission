@@ -6,10 +6,10 @@ import datetime as date
 from utils import format_datetime, make_dirs
 
 AVAILABLE_PRODUCTS = {
-    #'Ozone'         : 'L2__O3____',
+    'Ozone'         : 'L2__O3____',
     'Aerosol'       : 'L2__Aerosol____',
-   # 'CarbonMonoxide': 'L2__CO____',
-    'Nitrogen': 'L2__NO2____',
+    'CarbonMonoxide': 'L2__CO____',
+    'NitrogenDioxide': 'L2__NO2____',
     'SulfurDioxide': 'L2__SO2____',
     'Formaldehyde': 'L2__HCHO____',
     'Glyoxal': 'L2__CHOCHO____',
@@ -91,16 +91,3 @@ class SentinelWrapper:
                 rfiles.extend(glob.glob(save_dir + '/*'))
 
             return rfiles
-
-
-if __name__ == '__main__':
-    dots = [(0.8, 39.3), (20.4, 39.3), (20.4, 49.8), (0.8, 49.8), (0.8, 39.3)]
-    s = SentinelWrapper()
-    s.set_polygon(dots)
-    b_date = date.datetime.fromisoformat('2019-08-19 00:00:00')
-    e_date = date.datetime.fromisoformat('2019-10-19 00:00:00')
-    s.set_interval(b_date, e_date)
-    products = list(AVAILABLE_PRODUCTS.keys())
-    s.set_products(products)
-    s.set_processing_level(2)
-    s.save()
