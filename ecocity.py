@@ -2,7 +2,7 @@ import requests as req
 
 
 def get_spots():
-	link = 	'https://eco-city.org.ua/public.json?coords=%7B%22south%22:24.195559971940188,%22west%22:1.0908458708079252,%22north%22:65.515213718375,%22east%22:54.5269725797923%7D'
+	link = 	'https://eco-city.org.ua/public.json'
 	r = req.get(link)
 	spots = r.json()
 	return spots
