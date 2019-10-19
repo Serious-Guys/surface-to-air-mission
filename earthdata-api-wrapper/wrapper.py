@@ -1,7 +1,7 @@
 import os
 import re
 
-import requests  # get the requsts library from https://github.com/requests/requests
+import requests
 from credentials import CredentialsWrapper as creds
 import bs4
 
@@ -21,8 +21,7 @@ class SessionWithHeaderRedirection(requests.Session):
             original_parsed = requests.utils.urlparse(response.request.url)
             redirect_parsed = requests.utils.urlparse(url)
 
-            if (
-                    original_parsed.hostname != redirect_parsed.hostname) and redirect_parsed.hostname != \
+            if (original_parsed.hostname != redirect_parsed.hostname) and redirect_parsed.hostname !=\
                     self.AUTH_HOST and original_parsed.hostname != self.AUTH_HOST:
                 del headers['Authorization']
 
@@ -54,8 +53,6 @@ def save_topics(topics: list = None):
                 if link.text.endswith('.he5'):
                     get_urls[topic].append(f'{url}/{link.text}')
 
-    # extract the filename from the url to be used when saving the file
-
     for topic, urls in get_urls.items():
         for url in urls:
             filename = url[url.rfind('/') + 1:]
@@ -71,8 +68,8 @@ def save_topics(topics: list = None):
 
                 with open(save_path, 'wb') as fd:
                     for chunk in response.iter_content(chunk_size=1024 * 1024):
-                        print(f'Saved {save_path}')
                         fd.write(chunk)
+                    print(f'Saved {save_path}')
 
             except requests.exceptions.HTTPError as e:
                 print(e)
