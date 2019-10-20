@@ -34,6 +34,7 @@ class SentinelWrapper:
 
     def set_polygon(self, dots: list):
         self.polygon = 'POLYGON(('
+        # rewrite as .josin(', ')
         for i, (lon, lat) in enumerate(dots, start=1):
             self.polygon += f'{lon:.5f} {lat:.5f}'
             if i != len(dots):
