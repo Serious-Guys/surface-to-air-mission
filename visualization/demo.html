@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <title>Extrude polygons for 3D indoor mapping</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id='map'></div>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiYW5kemF2IiwiYSI6ImNrMXhlNGRtajA1cHMzY25zdXBhZ29sMmcifQ.Vgu_LK7CJEx153uf_y7OyQ';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [24.031111, 49.842957],
+            zoom: 3,
+            pitch: 40,
+            bearing: 5,
+            antialias: true,
+            maxZoom: 6.5,
+            minZoom: 2,
+        });
+
+        // map.dragRotate.disable();
+        // map.touchZoomRotate.disableRotation();
+
+        const data = {
+            "features": [],
+            "type": "FeatureCollection"
+        }
+
+        const loadData = (s, w, n, e) => {
+            data.features = [];
+            fetch(`http://localhost:3001/api/airquality?bounds=${s},${w},${n},${e}`)
+                .then(response => response.json())
+                .then(result => result.map((square, i) => {
+                    data.features.push({
+                        "type": "Feature",
+                        "properties": {
+                            "level": 1,
+                            "name": `graph-${i}`,
+                            "base_height": 0,
+                            "height": square.value * 4000,
+                            "color": square.value < 90 ? 'green' : square.value < 140 ? 'yellow' : 'red',
+                            description: `<strong>${Math.round(square.value)} - ${new Date(square.timestamp).toDateString()}</strong`
+                        },
+                        "geometry": {
+                            "coordinates": [
+                                [
+                                    [
+                                        square.x_start,
+                                        square.y_start,
+                                    ],
+                                    [
+                                        square.x_end,
+                                        square.y_start,
+                                    ],
+                                    [
+                                        square.x_end,
+                                        square.y_end,
+                                    ],
+                                    [
+                                        square.x_start,
+                                        square.y_end,
+                                    ],
+                                    [
+                                        square.x_start,
+                                        square.y_start,
+                                    ],
+                                ]
+                            ],
+                            "type": "Polygon"
+                        },
+                        "id": i
+                    });
+                    map.getSource('room-extrusion').setData(data);
+                }))
+        }
+
+        map.on('load', function () {
+            loadData(44.135678, 21.655657, 53.135678, 41.655657);
+            map.addLayer({
+                'id': 'room-extrusion',
+                'type': 'fill-extrusion',
+                'source': {
+                    // GeoJSON Data source used in vector tiles, documented at
+                    // https://gist.github.com/ryanbaumann/a7d970386ce59d11c16278b90dde094d
+                    'type': 'geojson',
+                    'data': data,
+                },
+                'paint': {
+                    // See the Mapbox Style Specification for details on data expressions.
+                    // https://docs.mapbox.com/mapbox-gl-js/style-spec/#expressions
+
+                    // Get the fill-extrusion-color from the source 'color' property.
+                    'fill-extrusion-color': ['get', 'color'],
+
+                    // Get fill-extrusion-height from the source 'height' property.
+                    'fill-extrusion-height': ['get', 'height'],
+
+                    // Get fill-extrusion-base from the source 'base_height' property.
+                    'fill-extrusion-base': ['get', 'base_height'],
+
+                    // Make extrusions slightly opaque for see through indoor walls.
+                    "fill-extrusion-opacity": 0.5
+
+                }
+            });
+        });
+
+        map.on('click', 'room-extrusion', function (e) {
+            var coordinates = e.features[0].geometry.coordinates;
+            var description = e.features[0].properties.description;
+
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML(description)
+                .addTo(map);
+        });
+
+        map.on('moveend', function (e) {
+            var bounds = map.getBounds();
+            // loadData(bounds._sw.lat, bounds._sw.lng, bounds._ne.lat, bounds._ne.lng);
+        });
+    </script>
+
+</body>
+
+</html>
