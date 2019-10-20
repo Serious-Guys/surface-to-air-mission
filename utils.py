@@ -1,13 +1,12 @@
-from __future__ import annotations
 from typing import Optional
 import os
 
 
 class Singleton(type):
 
-    _instance: Optional[Singleton] = None
+    _instance: Optional['Singleton'] = None
 
-    def __call__(cls) -> Singleton:
+    def __call__(cls) -> 'Singleton':
         if cls._instance is None:
             cls._instance = super().__call__()
         return cls._instance
