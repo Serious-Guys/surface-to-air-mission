@@ -58,8 +58,8 @@
                             "level": 1,
                             "name": `graph-${i}`,
                             "base_height": 0,
-                            "height": square.value * 4000,
-                            "color": square.value < 90 ? 'green' : square.value < 140 ? 'yellow' : 'red',
+                            "height": 1,
+                            "color": getcolor(1 - square.value / 250),
                             description: `<strong>${Math.round(square.value)} - ${new Date(square.timestamp).toDateString()}</strong`
                         },
                         "geometry": {
