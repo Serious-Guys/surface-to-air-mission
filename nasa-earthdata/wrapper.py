@@ -76,4 +76,4 @@ def save_topics(topics: list = None):
 
 
 if __name__ == '__main__':
-    save_topics(['CarbonMonoxide'])
+    save_topics(['Ozone'])
